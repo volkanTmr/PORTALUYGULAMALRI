@@ -7,7 +7,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class TryPortal {
+public class PortalLoginTests{
 
     WebDriver driver;
     
@@ -15,7 +15,7 @@ public class TryPortal {
     public void setUp(){
 
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\SAMSUNG\\chrome_web_driver\\chromedriver.exe");
-        WebDriver driver = new ChromeDriver();
+        driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.get("http://185.99.199.194:8181/portal/#/login");
     }
@@ -23,7 +23,7 @@ public class TryPortal {
     @Test
     public  void CheckIfButtonPassive() throws InterruptedException {   // JIRA 1. ODEV( ad dolu şifre boş iken button passive mi)
 
-            driver.findElement(By.cssSelector("input[placeholder='Kullanıcı Adı']")).sendKeys("gokman");
+            driver.findElement(By.cssSelector("input[formcontrolname='userName']")).sendKeys("gokman");
             //driver.findElement(By.cssSelector("input[type='password']")).sendKeys(""); - iki şekilde olabilir 1. hiçbirşey girmeden boş bırakılarak
             Actions a = new Actions(driver);// - 2. actions objesiyle mouse ile password üzerine gelip hiçbir şey yazmadan sadece click yapıyoruz
             a.moveToElement(driver.findElement(By.cssSelector("input[type='password']"))).click().build().perform();
@@ -157,6 +157,75 @@ public class TryPortal {
             }
 
         }
+
+    @Test
+    public void CheckLookUpPage() throws InterruptedException {// tanımlar menusune tıklayınca lookup page geliyor mu
+
+        driver.findElement(By.cssSelector("input[placeholder='Kullanıcı Adı']")).sendKeys("gokman");
+        driver.findElement(By.xpath("//input[@formcontrolname='password']")).sendKeys("12345678");
+        driver.findElement(By.cssSelector("button[class='login-btn mat-raised-button mat-button-base']")).click();
+        Thread.sleep(10000);
+        driver.findElement(By.xpath("(//div[@class='mat-list-item-content'])[1]")).click();
+        WebElement targetTitle = driver.findElement(By.xpath("//mat-header-cell[@class='mat-header-cell cdk-column-parentvalue mat-column-parentvalue ng-star-inserted']"));
+        System.out.println(targetTitle.getText());
+
+        if (targetTitle.getText().contains("Lookup")) {
+
+            System.out.println(" lookup page is visible");
+            System.out.println("success");
+        } else {
+            System.out.println("lookup page not visible");
+        }
+    }
+
+    @Test
+    public void AbsencePageVisibility() throws InterruptedException {// izinler e tıklayınca absence sayfası geliyor mu
+
+            driver.findElement(By.cssSelector("input[placeholder='Kullanıcı Adı']")).sendKeys("gokman");
+            driver.findElement(By.xpath("//input[@formcontrolname='password']")).sendKeys("12345678");
+            driver.findElement(By.cssSelector("button[class='login-btn mat-raised-button mat-button-base']")).click();
+            Thread.sleep(10000);
+
+            driver.findElement(By.xpath("(//div[@class='mat-list-item-content'])[2]")).click();
+            WebElement absencePage = driver.findElement(By.cssSelector("app-absence.ng-star-inserted"));
+            Thread.sleep(10000);
+
+            if (absencePage.isDisplayed()) {
+
+                System.out.println(" izinler absence page is visible");
+                System.out.println("success");
+            } else {
+                System.out.println("izinler absence page not visible");
+            }
+
+
+        }
+
+    @Test
+    public void PopUpChartVisibility() throws InterruptedException {// tanımlar dan yemi tanım ekle tıklayınca popup geliyor mu
+
+        driver.findElement(By.cssSelector("input[placeholder='Kullanıcı Adı']")).sendKeys("gokman");
+        driver.findElement(By.xpath("//input[@formcontrolname='password']")).sendKeys("12345678");
+        driver.findElement(By.cssSelector("button[class='login-btn mat-raised-button mat-button-base']")).click();
+        Thread.sleep(10000);
+
+        driver.findElement(By.xpath("(//div[@class='mat-list-item-content'])[1]")).click();
+        driver.findElement(By.cssSelector("button[class='new-button mat-raised-button mat-button-base']")).click();
+        WebElement tanımlarPopUpChart = driver.findElement(By.xpath("//div/mat-dialog-container"));
+        Thread.sleep(5000);
+
+        if(tanımlarPopUpChart.isDisplayed()){
+
+            System.out.println(" yeni tanım popUpChart is visible" );
+            System.out.println("success");
+        }
+        else {
+            System.out.println(" yeni tanım popUpChart not visible");
+        }
+    }
+
+
+
 
     @AfterMethod
     public void tearDown()
